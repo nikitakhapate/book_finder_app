@@ -1,7 +1,8 @@
 
-import 'package:flutter/material.dart';
-import 'package:mEvx/main.dart';
 
+import 'package:flutter/material.dart';
+
+import '../main.dart';
 import 'secondScreen.dart';
 class HomeScreen extends StatefulWidget{
   @override
@@ -13,22 +14,11 @@ class HomeScreen extends StatefulWidget{
 
 class HomeScreenState extends State<HomeScreen> {
 
-   final nameController = TextEditingController();
-
-
-
-  @override
-  void dispose() {
-    nameController.dispose();
-    super.dispose();
-  }
 
   @override
   void initState() {
     super.initState();
   }
-
-
   @override
   Widget build(BuildContext context) {
 
@@ -77,26 +67,31 @@ class HomeScreenState extends State<HomeScreen> {
 
                   ),
                   SizedBox(height: 10.0,),
-                  RaisedButton(
-                    padding: EdgeInsets.symmetric(horizontal: 100.0),
-                    child: new Text("SEARCH"),
-                    color: Colors.purple,
-                    shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(30.0),
-                    ),
-                    onPressed: (){
-                      //   Navigator.of(context).push(
-                      //      MaterialPageRoute(
-                      //           builder: (context)
-                      //         => API_Manager(nameController.text)
-                      //     )
-                      // );
+                  Row(
+                    children: [
+                      RaisedButton(
+                        padding: EdgeInsets.symmetric(horizontal: 100.0),
+                        child: new Text("SEARCH"),
+                        color: Colors.purple,
+                        shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(30.0),
+                        ),
+                        onPressed: (){
+                          //   Navigator.of(context).push(
+                          //      MaterialPageRoute(
+                          //           builder: (context)
+                          //         => API_Manager(nameController.text)
+                          //     )
+                          // );
 
-                      Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) => API_Manager( )));
-                      // Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) => API_Manager()));
-                      print(nameController.text);
+                          Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) => API_Manager( )));
+                          // Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) => API_Manager()));
+                          print(nameController.text);
 
-                    },
+                        },
 
+                      ),
+
+                    ],
                   ),
 
                 ],

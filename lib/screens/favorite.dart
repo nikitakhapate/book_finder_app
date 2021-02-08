@@ -10,63 +10,54 @@ import 'package:flutter/rendering.dart';
 import 'package:http/http.dart' as http;
 
 import '../main.dart';
-import 'favorite.dart';
 
 
-class API_Manager extends StatefulWidget {
-  API_Manager({Key key}) : super(key: key);
+class favprite extends StatefulWidget {
+  // API_Manager({Key key}) : super(key: key);
 
 
   @override
   _MyAppState createState() => _MyAppState();
 }
 
-class _MyAppState extends State<API_Manager> {
-  Map link ;
+class _MyAppState extends State<favprite> {
+  Map link;
   List itemslist;
-  Future fetchdata() async{
-    final response = await http.get('https://www.googleapis.com/books/v1/volumes?q='+nameController.text);
-    if(response.statusCode==200){
-      setState(() {
-        link=json.decode(response.body);
-        itemslist=link['items'];
-      });
-    }
+Future fetchdata() async{
+  final response = await http.get('https://www.googleapis.com/books/v1/volumes?q='+nameController.text);
+  if(response.statusCode==200){
+    setState(() {
+      link=json.decode(response.body);
+      itemslist=link['items'];
+    });
   }
-  @override
-  void initState(){
-    fetchdata();
-    super.initState();
-  }
+}
+@override
+void initState(){
+  fetchdata();
+  super.initState();
+}
+
+
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
 
     return
       Scaffold(
-          appBar: AppBar(
-            actions: <Widget>[
-              IconButton(
-                icon: Icon(Icons.favorite),
-
-                onPressed: () {
-                  Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (BuildContext context) =>  favprite()));
-                },
-              ),
-            ],
-            title: Text(nameController.text,style: TextStyle(fontWeight:FontWeight.bold ,
+          appBar: AppBar(title: Text('favorite books',style: TextStyle(fontWeight:FontWeight.bold ,
               fontSize: 20),),
           ),
           body:
-          link==null?Container():cart()
+          link==null?Container():card()
 
 
       ) ;
   }
 
-  cart() {
+  card() {
 
-    var favorite = Provider.of<CardModel>(context);
+    var favorite = Provider.of<CardModel>(context).selectedEventsIndex;
     final ScrollController _scrollController = ScrollController();
     return SingleChildScrollView(
       scrollDirection: Axis.vertical,
@@ -85,7 +76,7 @@ class _MyAppState extends State<API_Manager> {
               // scrollDirection: Axis.horizontal,
               scrollDirection: Axis.vertical,
               itemBuilder: (context,index){
-                String url=itemslist[index]['volumeInfo']['imageLinks']['smallThumbnail'].toString();
+                String url=itemslist[favorite[index]]['volumeInfo']['imageLinks']['smallThumbnail'].toString();
 
                 return
 
@@ -116,7 +107,7 @@ class _MyAppState extends State<API_Manager> {
                                       // Text(url),
 
                                       Flexible(
-                                        child: Text(    itemslist[index]['volumeInfo']['title'].toString(),style: TextStyle(fontWeight:FontWeight.bold ,
+                                        child: Text(    itemslist[favorite[index]]['volumeInfo']['title'].toString(),style: TextStyle(fontWeight:FontWeight.bold ,
                                             fontSize: 20),
                                         ),
                                       ),],
@@ -126,7 +117,7 @@ class _MyAppState extends State<API_Manager> {
                                     children: [
                                       // Text("authors:"),
 
-                                      Text(   itemslist[index]['volumeInfo']['authors'].toString(),style: TextStyle(
+                                      Text(  itemslist[favorite[index]].toString(),style: TextStyle(
                                           fontSize: 10),
                                       ),
 
@@ -141,7 +132,7 @@ class _MyAppState extends State<API_Manager> {
                                         shape: new RoundedRectangleBorder(borderRadius: new BorderRadius.circular(30.0),
                                         ),
                                         onPressed:()async {
-                                          String url = itemslist[index]['volumeInfo']['previewLink'];
+                                          String url = itemslist[favorite[index]]['volumeInfo']['previewLink'];
                                           if (await canLaunch(url)) {
                                             await launch(url);
                                           } else {
@@ -150,49 +141,53 @@ class _MyAppState extends State<API_Manager> {
                                         },
 
                                       ),
-                                      InkWell(onTap: (){
-                                        favorite.addcollege(index);
-                                        print('$index added' );
-                                        final snackBar = SnackBar(content: Text('$index added to Favorite list'));
+                                      IconButton(
+                                        icon: Icon(Icons.remove_circle_outline,), onPressed: () {
+                                        Provider.of<CardModel>(context,listen: false).removecollege(favorite[index]);
+                                        //  onLikeButtonTapped(index,context);
+                                        print(index);
+                                        final snackBar = SnackBar(content: Text('$index removed from Favorite list'));
 
 // Find the Scaffold in the widget tree and use it to show a SnackBar.
                                         Scaffold.of(context).showSnackBar(snackBar);
                                       },
-                                          child: Icon(Icons.favorite)),
+
+                                      ),
+
                                     ],
                                   ),
 
-                                  // Padding(
-                                  //   padding: const EdgeInsets.all(20),
-                                  //   child: Row(
-                                  //     mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                  //     children: <Widget>[
-                                  //       // Row(
-                                  //       //   children: <Widget>[
-                                  //       //     Icon(Icons.category),
-                                  //       //     SizedBox(width: 6),
-                                  //       //     Text(category),
-                                  //       //   ],
-                                  //       // ),
-                                  //       Row(
-                                  //         children: <Widget>[
-                                  //           Icon(Icons.pages),
-                                  //
-                                  //
-                                  //           Text(  itemslist[index]['volumeInfo']['pageCount'].toString()),
-                                  //         ],
-                                  //       ),
-                                  //       Row(
-                                  //         children: <Widget>[
-                                  //           Icon(Icons.monetization_on_sharp),
-                                  //
-                                  //           // Text( itemslist[index]['SaleInfo']['buyLink']),
-                                  //         ],
-                                  //       ),
-                                  //
-                                  //     ],
-                                  //   ),
-                                  // ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(20),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                      children: <Widget>[
+                                        // Row(
+                                        //   children: <Widget>[
+                                        //     Icon(Icons.category),
+                                        //     SizedBox(width: 6),
+                                        //     Text(category),
+                                        //   ],
+                                        // ),
+                                        Row(
+                                          children: <Widget>[
+                                            Icon(Icons.pages),
+
+
+                                            Text(  itemslist[favorite[index]]['volumeInfo']['pageCount'].toString()),
+                                          ],
+                                        ),
+                                        Row(
+                                          children: <Widget>[
+                                            Icon(Icons.monetization_on_sharp),
+
+                                            // Text( itemslist[index]['SaleInfo']['buyLink']),
+                                          ],
+                                        ),
+
+                                      ],
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),
@@ -203,7 +198,7 @@ class _MyAppState extends State<API_Manager> {
 
                   );
               },
-              itemCount:itemslist==null?0:itemslist.length,
+              itemCount:itemslist==null?0:favorite.length,
 
             ),
           ),
